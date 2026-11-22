@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow, noarchive">
+<meta name="referrer" content="no-referrer">
+<meta name="theme-color" content="#f6f5f2" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#17181a" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="メモ">
+<title>メモ</title>
+<style>
+:root{--bg:#f6f5f2;--card:#fff;--ink:#1d1d1f;--sub:#6b6b70;--line:#e4e2dc;--acc:#3a5ccc;--accbg:#e9eefc;--me:#fff4d6;--meline:#e0b84a;--chip:#efede8}
+@media (prefers-color-scheme:dark){:root{--bg:#17181a;--card:#222326;--ink:#ececee;--sub:#9a9aa2;--line:#33343a;--acc:#8ea6ff;--accbg:#2a3150;--me:#3a3220;--meline:#b8923a;--chip:#2c2d31}}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 -apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP","Yu Gothic UI",sans-serif;-webkit-text-size-adjust:100%}
+a{color:var(--acc);word-break:break-all}
+button,input{font:inherit;color:inherit}
+.hide{display:none!important}
+#lock{min-height:100dvh;display:flex;align-items:center;justify-content:center;padding:24px 16px}
+#lock form{width:100%;max-width:360px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:24px}
+#lock h1{font-size:20px;margin:0 0 16px}
+#lock input[type=password]{width:100%;padding:12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);font-size:16px}
+#lock label{display:flex;gap:8px;align-items:center;margin:12px 0;color:var(--sub);font-size:14px}
+.btn{display:inline-block;border:0;border-radius:10px;padding:12px 16px;background:var(--acc);color:#fff;font-weight:600;cursor:pointer;width:100%}
+#err{color:#d33;font-size:14px;min-height:1.4em;margin-top:8px}
+header{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line);padding:calc(env(safe-area-inset-top) + 8px) 16px 0}
+.top{display:flex;align-items:center;gap:8px;min-height:40px}
+.top h2{font-size:18px;margin:0;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.icon{border:0;background:none;padding:8px;font-size:18px;cursor:pointer;color:var(--sub)}
+nav{display:flex;gap:4px}
+nav button{flex:1;border:0;background:none;padding:10px 4px;border-bottom:2px solid transparent;color:var(--sub);cursor:pointer;font-weight:600}
+nav button.on{color:var(--ink);border-color:var(--acc)}
+main{padding:12px 16px calc(env(safe-area-inset-bottom) + 80px);max-width:760px;margin:0 auto}
+.ch{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:8px;cursor:pointer}
+.ch .n{font-weight:600}
+.ch .s{color:var(--sub);font-size:13px}
+.ch .grow{flex:1;min-width:0}
+.badge{background:var(--acc);color:#fff;border-radius:999px;padding:2px 8px;font-size:12px;font-weight:700}
+.cat{color:var(--sub);font-size:12px;margin:16px 4px 6px;letter-spacing:.05em}
+.day{text-align:center;margin:16px 0 8px}
+.day span{background:var(--chip);color:var(--sub);border-radius:999px;padding:2px 12px;font-size:12px}
+.msg{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:6px}
+.msg.me{background:var(--me);border-color:var(--meline)}
+.msg.flash{outline:3px solid var(--acc)}
+.hd{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
+.au{font-weight:700;font-size:14px}
+.tm{color:var(--sub);font-size:12px}
+.cn{font-size:12px;background:var(--accbg);color:var(--acc);border-radius:6px;padding:0 6px;cursor:pointer}
+.rp{font-size:13px;color:var(--sub);border-left:3px solid var(--line);padding-left:8px;margin:4px 0}
+.ct{white-space:pre-wrap;word-break:break-word;margin-top:2px}
+.lk{font-size:13px;margin-top:4px}
+.ex{font-size:12px;color:var(--sub);margin-top:4px}
+mark{background:#ffe27a;color:#000;border-radius:3px}
+.search{position:sticky;top:96px;z-index:3;background:var(--bg);padding:4px 0 8px}
+.search input{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--card);font-size:16px}
+.note{color:var(--sub);font-size:13px;text-align:center;margin:16px 0}
+.fab{position:fixed;right:16px;bottom:calc(env(safe-area-inset-bottom) + 16px);border:1px solid var(--line);background:var(--card);border-radius:999px;width:48px;height:48px;font-size:20px;box-shadow:0 2px 8px rgba(0,0,0,.15);cursor:pointer}
+.more{display:block;margin:8px auto 16px;border:1px solid var(--line);background:var(--card);border-radius:10px;padding:8px 16px;cursor:pointer}
+</style>
+</head>
+<body>
+<div id="lock">
+  <form id="lf">
+    <h1>メモ</h1>
+    <input id="pw" type="password" autocomplete="current-password" placeholder="パスワード" required>
+    <label><input id="rem" type="checkbox" checked> この端末で覚える</label>
+    <button class="btn" id="go">開く</button>
+    <div id="err"></div>
+  </form>
+</div>
+<div id="app" class="hide">
+  <header>
+    <div class="top">
+      <button class="icon hide" id="back" aria-label="戻る">←</button>
+      <h2 id="ttl">チャンネル</h2>
+      <button class="icon" id="out" aria-label="ロック">🔒</button>
+    </div>
+    <nav>
+      <button data-v="list" class="on">チャンネル</button>
+      <button data-v="recent">最近</button>
+      <button data-v="search">検索</button>
+    </nav>
+  </header>
+  <main id="main"></main>
+  <button class="fab hide" id="fab" aria-label="下へ">↓</button>
+</div>
+<script>
+(() => {
+const $ = (s) => document.querySelector(s);
+const ME = /(@のむ|のむさん|のむ さん|野村)/;
+let D = null, byId = {}, ENC = null;
+const LS = {get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}},del(k){try{localStorage.removeItem(k)}catch(e){}}};
+const u8 = (b) => Uint8Array.from(atob(b), (c) => c.charCodeAt(0));
+const b64 = (a) => btoa(String.fromCharCode(...new Uint8Array(a)));
+
+async function load(){ if(!ENC){ const r = await fetch("data.enc?" + Date.now(), {cache:"no-store"}); ENC = await r.json(); } return ENC; }
+async function open(key){
+  const e = await load();
+  const buf = await crypto.subtle.decrypt({name:"AES-GCM", iv:u8(e.iv)}, key, u8(e.ct));
+  let txt;
+  try { const s = new Blob([buf]).stream().pipeThrough(new DecompressionStream("gzip")); txt = await new Response(s).text(); }
+  catch(x){ throw new Error("このブラウザは古くて開けません（iOS 16.4以上・最新のChromeで開いてください）"); }
+  D = JSON.parse(txt);
+  D.channels.forEach(c => c.m.forEach(m => { m.ch = c; byId[m.i] = m; }));
+  $("#lock").classList.add("hide"); $("#app").classList.remove("hide");
+  route();
+}
+async function tryRemembered(){
+  const k = LS.get("k"); if(!k) return;
+  try{ const e = await load(); if(LS.get("ks") !== e.salt) throw 0;
+    const key = await crypto.subtle.importKey("raw", u8(k), "AES-GCM", false, ["decrypt"]); await open(key);
+  }catch(x){ LS.del("k"); }
+}
+$("#lf").addEventListener("submit", async (ev) => {
+  ev.preventDefault(); $("#err").textContent = "開いています…"; $("#go").disabled = true;
+  try{
+    const e = await load();
+    const base = await crypto.subtle.importKey("raw", new TextEncoder().encode($("#pw").value.trim()), "PBKDF2", false, ["deriveKey"]);
+    const key = await crypto.subtle.deriveKey({name:"PBKDF2", salt:u8(e.salt), iterations:e.iter, hash:"SHA-256"}, base, {name:"AES-GCM", length:256}, true, ["decrypt"]);
+    await open(key);
+    if($("#rem").checked){ LS.set("k", b64(await crypto.subtle.exportKey("raw", key))); LS.set("ks", e.salt); }
+    $("#pw").value = ""; $("#err").textContent = "";
+  }catch(x){ $("#err").textContent = x && x.message && x.message.includes("ブラウザ") ? x.message : "パスワードが違います"; }
+  $("#go").disabled = false;
+});
+$("#out").onclick = () => { LS.del("k"); LS.del("ks"); location.hash = ""; location.reload(); };
+
+const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const re = (q) => new RegExp(q.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "gi");
+function rich(s, q){
+  let h = esc(s).replace(/https?:\/\/[^\s<>"']+/g, (u) => `<a href="${u}" target="_blank" rel="noopener noreferrer">${u}</a>`);
+  if(q) h = h.replace(/(<[^>]+>)|([^<]+)/g, (m, tag, text) => tag ? tag : text.replace(re(esc(q)), (x) => `<mark>${x}</mark>`));
+  return h;
+}
+const dt = (t) => new Date(t);
+const hm = (t) => { const d = dt(t); return isNaN(d) ? "" : d.toLocaleTimeString("ja-JP",{hour:"2-digit",minute:"2-digit",timeZone:"Asia/Tokyo"}); };
+const md = (t) => { const d = dt(t); return isNaN(d) ? "" : d.toLocaleDateString("ja-JP",{month:"numeric",day:"numeric",weekday:"short",timeZone:"Asia/Tokyo"}); };
+const ymd = (t) => { const d = dt(t); return isNaN(d) ? "" : d.toLocaleDateString("ja-JP",{year:"numeric",month:"numeric",day:"numeric",weekday:"short",timeZone:"Asia/Tokyo"}); };
+
+function card(m, opt = {}){
+  const me = ME.test(m.c || "") ? " me" : "";
+  let h = `<div class="msg${me}" id="m${m.i}"><div class="hd"><span class="au">${esc(m.a)}${m.g ? "" : ""}</span><span class="tm">${opt.date ? md(m.t) + " " : ""}${hm(m.t)}</span>`;
+  if(opt.ch) h += `<span class="cn" data-go="${m.ch.id}" data-m="${m.i}">#${esc(m.ch.name)}</span>`;
+  h += `</div>`;
+  if(m.r) h += `<div class="rp">↩ ${rich(m.r)}</div>`;
+  if(m.c) h += `<div class="ct">${rich(m.c, opt.q)}</div>`;
+  if(m.l) h += `<div class="lk">${m.l.map(u => `<div>🔗 <a href="${esc(u)}" target="_blank" rel="noopener noreferrer">${esc(u)}</a></div>`).join("")}</div>`;
+  if(m.x && !m.c) h += `<div class="ex">${esc(m.x)}</div>`;
+  return h + `</div>`;
+}
+function setNav(v, title, back){
+  document.querySelectorAll("nav button").forEach(b => b.classList.toggle("on", b.dataset.v === v));
+  $("#ttl").textContent = title; $("#back").classList.toggle("hide", !back);
+  $("#fab").classList.toggle("hide", v !== "ch");
+}
+const seen = (id) => LS.get("seen:" + id) || "0";
+
+function viewList(){
+  setNav("list", "チャンネル");
+  let h = "", cat = null;
+  for(const c of D.channels){
+    if(c.category !== cat){ cat = c.category; h += `<div class="cat">${esc(cat || "")}</div>`; }
+    const last = c.m[c.m.length - 1];
+    const n = c.m.filter(m => BigInt(m.i) > BigInt(seen(c.id))).length;
+    h += `<div class="ch" data-go="${c.id}"><div class="grow"><div class="n"># ${esc(c.name)}</div><div class="s">${c.m.length}件${last ? "・最後 " + md(last.t) + " " + hm(last.t) + "・" + esc(last.a) : ""}</div></div>${n ? `<span class="badge">${n > 99 ? "99+" : n}</span>` : ""}</div>`;
+  }
+  h += `<div class="note">最終更新 ${ymd(D.built)} ${hm(D.built)}</div>`;
+  $("#main").innerHTML = h; window.scrollTo(0, 0);
+}
+let shown = 300;
+function viewCh(id, target){
+  const c = D.channels.find(x => x.id === id); if(!c) return viewList();
+  setNav("ch", "# " + c.name, true);
+  if(target){ const idx = c.m.findIndex(m => m.i === target); if(idx >= 0) shown = Math.max(shown, c.m.length - idx + 20); }
+  const start = Math.max(0, c.m.length - shown);
+  let h = start > 0 ? `<button class="more" id="more">もっと前を見る（あと${start}件）</button>` : "";
+  let day = "";
+  const prevSeen = seen(c.id);
+  let marked = false;
+  for(const m of c.m.slice(start)){
+    const d = ymd(m.t); if(d !== day){ day = d; h += `<div class="day"><span>${d}</span></div>`; }
+    if(!marked && prevSeen !== "0" && BigInt(m.i) > BigInt(prevSeen)){ marked = true; h += `<div class="note" id="newline">── ここから新着 ──</div>`; }
+    h += card(m);
+  }
+  $("#main").innerHTML = h;
+  if(c.m.length) LS.set("seen:" + c.id, c.m[c.m.length - 1].i);
+  const mb = $("#more"); if(mb) mb.onclick = () => { shown += 300; viewCh(id); window.scrollTo(0, 0); };
+  requestAnimationFrame(() => {
+    const t = target && document.getElementById("m" + target);
+    if(t){ t.scrollIntoView({block:"center"}); t.classList.add("flash"); setTimeout(() => t.classList.remove("flash"), 2000); }
+    else if($("#newline")) $("#newline").scrollIntoView({block:"start"});
+    else window.scrollTo(0, document.body.scrollHeight);
+  });
+}
+function viewRecent(){
+  setNav("recent", "最近（3日間）");
+  const all = D.channels.flatMap(c => c.m);
+  const lastT = Math.max(...all.map(m => +dt(m.t) || 0));
+  const from = lastT - 3 * 864e5;
+  const ms = all.filter(m => +dt(m.t) >= from).sort((a, b) => BigInt(b.i) > BigInt(a.i) ? 1 : -1);
+  let h = `<div class="note">新しい順・${ms.length}件</div>`, day = "";
+  for(const m of ms){ const d = ymd(m.t); if(d !== day){ day = d; h += `<div class="day"><span>${d}</span></div>`; } h += card(m, {ch:true}); }
+  $("#main").innerHTML = h; window.scrollTo(0, 0);
+}
+function viewSearch(q){
+  setNav("search", "検索");
+  $("#main").innerHTML = `<div class="search"><input id="q" type="search" placeholder="言葉で探す（例: 競馬、@のむ、締切）" value="${esc(q || "")}"></div><div id="res"></div>`;
+  const inp = $("#q"); let tm;
+  const run = () => {
+    const v = inp.value.trim(); history.replaceState(null, "", "#search=" + encodeURIComponent(v));
+    if(!v){ $("#res").innerHTML = `<div class="note">全チャンネルから探します</div>`; return; }
+    const r = new RegExp(v.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i");
+    const hit = D.channels.flatMap(c => c.m).filter(m => r.test((m.c || "") + " " + m.a + " " + (m.l || []).join(" ") + " " + (m.x || ""))).sort((a, b) => BigInt(b.i) > BigInt(a.i) ? 1 : -1);
+    $("#res").innerHTML = `<div class="note">${hit.length}件（新しい順）</div>` + hit.slice(0, 200).map(m => card(m, {ch:true, date:true, q:v})).join("") + (hit.length > 200 ? `<div class="note">多いので200件まで表示</div>` : "");
+  };
+  inp.oninput = () => { clearTimeout(tm); tm = setTimeout(run, 200); };
+  run(); if(!q) inp.focus();
+}
+function route(){
+  if(!D) return;
+  const h = decodeURIComponent(location.hash.slice(1));
+  if(h.startsWith("c=")){ const [id, m] = h.slice(2).split(":"); shown = 300; viewCh(id, m); }
+  else if(h === "recent") viewRecent();
+  else if(h.startsWith("search")) viewSearch(h.split("=")[1] || "");
+  else viewList();
+}
+window.addEventListener("hashchange", route);
+document.addEventListener("click", (e) => {
+  const g = e.target.closest("[data-go]"); if(g){ location.hash = "c=" + g.dataset.go + (g.dataset.m ? ":" + g.dataset.m : ""); return; }
+  const n = e.target.closest("nav button"); if(n){ location.hash = n.dataset.v === "list" ? "" : n.dataset.v; if(n.dataset.v === "list") route(); }
+});
+$("#back").onclick = () => { if(history.length > 1) history.back(); else location.hash = ""; };
+$("#fab").onclick = () => window.scrollTo({top: document.body.scrollHeight, behavior: "smooth"});
+tryRemembered();
+})();
+</script>
+</body>
+</html>
